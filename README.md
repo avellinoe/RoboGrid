@@ -22,20 +22,20 @@ Included in `RoboGrid` is a test script that will initialize, run, and interact 
 ___________________
 ## Next Steps/Milestones
 ### Phase One: Infrastructure and Definition | Completed by March 13, 2019
-- [] Implement Grid Architecture (Initialize and Display)
-- [] Establish All Possible States
-- [] Establish All Possible Events
-- [] Update State Machine Diagram
+- [ ] Implement Grid Architecture (Initialize and Display)
+- [ ] Establish All Possible States
+- [ ] Establish All Possible Events
+- [ ] Update State Machine Diagram
 
 ### Phase Two: Simulation and Interaction | Completed by March 20, 2019
-- [] Develop Robot Behavior at each State
-- [] Develop Robot Behavior at each Event
-- [] Implement Robot's Autonomy
-- [] Implement User Interaction
+- [ ] Develop Robot Behavior at each State
+- [ ] Develop Robot Behavior at each Event
+- [ ] Implement Robot's Autonomy
+- [ ] Implement User Interaction
 
 ### Phase Three: Log File and Documentation | Completed by March 21, 2019
-- [] Enable Logging Feature (Write to Log File)
-- [] Implement Documentation
+- [ ] Enable Logging Feature (Write to Log File)
+- [ ] Implement Documentation
 ___________________
 ## Down The Line
 - *Future extensions may include:*
