@@ -13,7 +13,6 @@ namespace elma {
             throw Exception("Cannot access channels in a process before the process is scheduled.");
         } else {
             return _manager_ptr->channel(name);
-            
         }
     }
 
