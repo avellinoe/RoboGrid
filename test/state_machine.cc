@@ -29,5 +29,4 @@ namespace {
 
         ASSERT_THROW(m.run(100_ms),Exception);
     }
-
 }

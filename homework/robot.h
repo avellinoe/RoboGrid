@@ -41,6 +41,7 @@ class Robot : public StateMachine {
             add_transition("intruder detected", Wander, MakeNoise);
             add_transition("proximity warning", MakeNoise, Evade);
         }
+        
         Robot() : StateMachine("Robot") {
             set_initial(Wander);
             add_transition("start", Idle, Wander);

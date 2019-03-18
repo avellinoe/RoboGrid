@@ -60,7 +60,6 @@ namespace elma {
         StateMachine * _state_machine_ptr;
 
     };
-
 }
 
 #endif
