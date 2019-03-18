@@ -7,6 +7,7 @@ namespace elma {
             throw Exception("Cannot access events in a state before the is added to a state machine.");
         } else {                
             _state_machine_ptr->emit(e);
+            
         }
     }
 

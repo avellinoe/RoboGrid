@@ -107,6 +107,7 @@ namespace elma {
         for(auto process_ptr : _processes) {
             f(*process_ptr);
         }
+        
         return *this;
     }
 
