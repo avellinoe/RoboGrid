@@ -1,6 +1,7 @@
 #include <iostream>
 #include <chrono>
 #include <vector>
+#include <string>
 #include <ncurses.h>
 
 #include "robot.h"
@@ -8,20 +9,18 @@
 namespace robot {
 
     using namespace std::chrono;
-
     using namespace elma;
-
     using namespace robot;
 
-    //! A user interface for the a StopWatch object
-    class UserInterface : public Process {
+    //! The RoboGrid class implements the User-Defined (Real vs. Simulated) RoboGrid behavior
+    class RoboGrid : public Process {
 
         public:
 
             //! Create a new robot user interface using curses
             //! \param rob A reference to a robot object
-            UserInterface(Robot& rob);
-            
+            //! \param world A choice between a Real-time/User-Interacted or Simulated World
+            RoboGrid(Robot& robot, std::string world);
 
             void init() {}
             void start() {}
@@ -41,6 +40,7 @@ namespace robot {
         private:
 
             Robot& _robot;
+            std::string _world;
             bool _timerVal = false;
             bool _moveRobot = false;
     };

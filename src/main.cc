@@ -12,9 +12,9 @@ int main() {
 
     Manager m;
     Robot robot;
-    UserInterface ui(robot);
+    RoboGrid earth(robot, "Real");
 
-    m.schedule(ui, 10_ms)
+    m.schedule(earth, 10_ms)
      .schedule(robot, 10_ms)     
      .init()
      .run();

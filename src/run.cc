@@ -26,7 +26,6 @@ void RunState::during() {
 
         //do stuff here
         //update and refresh screen
-    
 }
 
 void RunState::exit(const Event& e) {

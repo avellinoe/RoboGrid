@@ -1,37 +1,45 @@
 #include <unistd.h>
 #include <iostream>
+#include <ncurses.h>
 #include <string>
 #include <map>
 #include <tuple>
 #include <vector>
 #include "robot.h"
-#include <ncurses.h>
+#include "utilities.h"
 
 using namespace robot;
 
+std::string path = "simulation.csv"; 
 std::map<std::tuple<int,int>, std::string> grid; // Grid with {x,y} coordinates and contents of the cell
 std::vector<string> contents = {"empty", "robot", "battery", "intruder"}; // Possible contents of a given cell
 
-UserInterface::UserInterface(Robot& rob) : Process("user input"), _robot(rob) {
+RoboGrid::RoboGrid(Robot& robot, std::string world) : Process(world), _world(world),_robot(robot) {
+    
+    //! The following will always run and be valid, regardless of what kind of world is chosen
     initscr();
-    keypad(stdscr, TRUE);
-    timeout(1);  // Timeout for waiting for user input
-    noecho();    // Do not echo user input to the screen
-    curs_set(0); // Do not show the cursor
-    refresh();
+    keypad(stdscr, TRUE);   // Enables the keypad of the user's terminal.
+                            // If enabled (TRUE), the user can press a function key (such as an arrow key),
+                            // wgetch returns a single value representing the function key, as in KEY_LEFT.
+    
+    timeout(1);     // Timeout for waiting for user input
+    noecho();       // Hide user input
+    curs_set(0);    // Hide the cursor
+    refresh();      // Must be called to get actual output to the terminal,
+                    // as other routines merely manipulate data structures.
 };
 
-void UserInterface::create_window(){
+void RoboGrid::create_window() {
     int rX = 1; //pos start x
     int rY = 1; //pos start y
-    WINDOW *robotWin = newwin(19,40,rY,rX);
+    WINDOW *robotWin = newwin(25,50,rY,rX);
     box(robotWin,'|','-');
     wsyncup(robotWin);
     wrefresh(robotWin);
 }
 
-bool UserInterface::robotTimer(high_resolution_clock::duration d){
-        mvprintw(20,1,"timerval = %d:%02d", 
+bool RoboGrid::robotTimer(high_resolution_clock::duration d){
+        mvprintw(26,1,"timerval = %d:%02d", 
         std::chrono::duration_cast<std::chrono::seconds>(d).count()%60,
         (std::chrono::duration_cast<std::chrono::milliseconds>(d).count()%1000)/10
     );
@@ -41,7 +49,7 @@ bool UserInterface::robotTimer(high_resolution_clock::duration d){
     return _timerVal;
 }
 
-void UserInterface::addTrash(int x, int y){
+void RoboGrid::addTrash(int x, int y){
     WINDOW *trashWin = newwin(1,1,y,x);
 
     waddch(trashWin,'*');
@@ -51,7 +59,7 @@ void UserInterface::addTrash(int x, int y){
         // wrefresh(trashWin);
 }
 
-void UserInterface::update() {
+void RoboGrid::update() {
 
     // USER INPUT
     // get a character from the user, if one is ready.
@@ -62,8 +70,8 @@ void UserInterface::update() {
     int robY = 2;
     int numCoords = 0, trashbin = 0;
     //int pairs[]={0,0};
-    int coordinates[40*19][2];
-    WINDOW *rob = newwin(1,1,2,2);
+    int coordinates[25*50][2];
+    WINDOW *robot = newwin(1,1,2,2);
     create_window();
 
     while((ch=getch())!='q'){
@@ -120,10 +128,10 @@ void UserInterface::update() {
 
         if (_robot.isOn()){
             if(_moveRobot){
-                wclear(rob);
-                wrefresh(rob);
-                waddch(rob,'R');
-                mvwin(rob,robY,robX);
+                wclear(robot);
+                wrefresh(robot);
+                waddch(robot,'R');
+                mvwin(robot,robY,robX);
                 for(int j = 0; j < sizeof(coordinates[0]); j++){
                     if(coordinates[j][0] == robX && coordinates[j][1] == robY){
                         mvprintw(21,1,"FOUND TRASH");
@@ -139,14 +147,14 @@ void UserInterface::update() {
                     mvprintw(22,1,"");
                 }
             }else{
-                waddch(rob,'R');
+                waddch(robot,'R');
             }
-            wrefresh(rob);
+            wrefresh(robot);
         }
 
         //take care of other stuff. 
         robotTimer(_robot.timeValue());
-        mvprintw(23,1,"on(o), off(d), clean(c), add trash(t), quit(q)");
+        mvprintw(30,1,"on(o), off(d), clean(c), add trash(t), quit(q)");
         for ( int i=0; i<_robot.addEvents().size(); i++ ) {
             mvprintw(24+i, 1, "Event: %s", _robot.addEvents()[i].c_str());
         }
