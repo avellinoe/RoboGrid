@@ -13,52 +13,80 @@ Robot::Robot() : StateMachine("robot") {
     set_initial(off);
     set_propagate(false);
     add_transition("on", off, on);
-    add_transition("run", on, run);            
-    add_transition("off", run, off);
-    add_transition("off", on, off);
-    add_transition("clean", run, clean);
-    add_transition("run", clean, run);
-    add_transition("off", clean, off);
+    add_transition("wander", on, wander); // once initialized, robot is stationary until told to wander
+    add_transition("makenoise", wander, makenoise); // when intruder is detected (same row or same column)
+    add_transition("findstation", wander, findstation); // when battery reaches threshold
+    add_transition("findstation", evade, findstation); // when battery reaches threshold
+    add_transition("evade", makenoise, evade); // when intruder is close to robot
+    add_transition("recharge", findstation, recharge); // when charge station is found
+    add_transition("wander", recharge, wander); // when battery is full
+    add_transition("dead", wander, dead); // when battery reaches zero
+    add_transition("dead", makenoise, dead); // when battery reaches zero
+    add_transition("dead", evade, dead); // when battery reaches zero
+    add_transition("dead", findstation, dead); // when battery reaches zero
+    add_transition("failsafe", on, off);
+    add_transition("off", wander, off);
 
-    // Make sure we start in the right condition
-    //reset();
+    _battery = 100; // Start with fully charged battery
+    _alarm = false; // Start with alarm turned off
 }
 
 void Robot::addEvent(string str) {
     _currEvents.push_back(str);
 }
 
-
-
-void Robot::turnOn() {
-   // _start_time = high_resolution_clock::now();
-   _isOn = true;
-   string currE = "Robot turned on";
-   addEvent(currE);
-}
-
-void Robot::turnOff() {
-   // _elapsed = high_resolution_clock::duration::zero();
-   // _laps.clear();
-   _isOn = false;
-   _isCleaning = false;
-   string currE = "Robot turned off";
-   addEvent(currE);
-}
-
-
-void Robot::runner() {
-    //_elapsed += high_resolution_clock::now() - _start_time;
-   string currE = "Robot is running around";
-   _isCleaning = false;
-   addEvent(currE);
-}
-
-void Robot::cleaner() {
-    //_elapsed += high_resolution_clock::now() - _start_time;
+void Robot::activateRobot() {
     _start_time = high_resolution_clock::now();
-    _isCleaning = true;
-   string currE = "Robot is cleaning";
+    _activated = true;
+    string currE = "Robot activated";
+    addEvent(currE);
+}
+
+void Robot::deactivateRobot() {
+    _activated = false;
+    _wandering = false;
+    string currE = "Robot deactivated";
+    addEvent(currE);
+}
+
+void Robot::goWander() {
+    _wandering = true; // Note that wandering simply means that the Robot is able to move freely
+    string currE = "Robot is wandering";
+    addEvent(currE);
+}
+
+void Robot::goMakeNoise() {
+    _makingnoise = true; // Robot is still activated and wandering
+    string currE = "Robot is making noise";
+    addEvent(currE);
+}
+
+void Robot::goEvade() {
+    _evading = true; // Robot is still activated, wandering, and making noise
+    string currE = "Robot is recharging";
+    addEvent(currE);
+}
+
+void Robot::goFindStation() {
+    _findingstation = true; // Robot is still activated and wandering
+    _makingnoise = false;   // but Robot is no longer making noise
+    _evading = false;       // nor is it evading
+    string currE = "Robot is finding station";
+    addEvent(currE);
+}
+
+void Robot::goRecharge() {
+    _recharging = true; // Robot is still activated
+    _wandering = false; // but no longer wandering
+    string currE = "Robot is recharging";
+    addEvent(currE);
+}
+
+void Robot::death() {
+   _activated = false;
+   _wandering = false;
+   _dead = true;
+   string currE = "Robot battery depleted";
    addEvent(currE);
 }
 
@@ -66,27 +94,10 @@ high_resolution_clock::duration Robot::timeValue() {
     return high_resolution_clock::now() - _start_time;
 }
 
-// Getters for UI
-// bool Robot::flagStatus(){
-//     return _pathFlag;
-// }
-
-bool Robot::isOn(){
-    return _isOn;
-}
-
-bool Robot::isCleaning(){
-    return _isCleaning;
-}
-
-// bool Robot::enemyStatus(){
-//     return _enemy;
-// }
-
-// bool Robot::shieldStatus(){
-//     return _shieldOn;
-// }
-
-// bool Robot::arrowStatus(){
-//     return _arrowFired;
-// }
+bool Robot::activated() { return _activated; }
+bool Robot::wandering() { return _wandering; }
+bool Robot::makingnoise() { return _makingnoise; }
+bool Robot::evading() { return _evading; }
+bool Robot::findingstation() { return _findingstation; }
+bool Robot::recharging() { return _recharging; }
+bool Robot::dead() { return _dead; }

@@ -17,10 +17,14 @@ namespace robot {
 
         public:
 
-            //! Create a new robot user interface using curses
-            //! \param rob A reference to a robot object
-            //! \param world A choice between a Real-time/User-Interacted or Simulated World
-            RoboGrid(Robot& robot, std::string world);
+            //! Default Constructor: New RoboGrid controlled by User via curses
+            //! \param robot A reference to a robot object
+            RoboGrid(Robot& robot);
+
+            //! Secondary Constructor: New RoboGrid controlled by Simulation
+            //! \param robot A reference to a robot object
+            //! \param path Path to .csv file with commands for RoboGrid
+            RoboGrid(Robot& robot, std::string path);
 
             void init() {}
             void start() {}
@@ -43,6 +47,9 @@ namespace robot {
             std::string _world;
             bool _timerVal = false;
             bool _moveRobot = false;
+
+            //! Simulation-only variables
+            std::vector<std::tuple<int, std::string, int, int>> _commands;
     };
 
 }

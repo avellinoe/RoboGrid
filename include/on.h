@@ -8,26 +8,18 @@ namespace robot {
     using namespace std::chrono;
     using namespace elma;
 
-    class Robot;  // Declare containing class so it can be refered to here
-                      // before it is defined in stopwatch.h 
+    class Robot;    // Declare containing class so it can be referred to here
 
-    //! The on state of the stopwatch
-    class OnState : public State {        
+    //! The On state of the Robot
+    class OnState : public State {
 
         public:
-        //! Build a new on state
-        OnState() : State("on") {};
-        void entry(const Event& e) {};
-        void during() {};
+            OnState() : State("on") {};
+            void entry(const Event& e) {};
+            void during() {};
+            void exit(const Event&);
 
-        //! Perform actions required when switching from off to on
-        //! \param e The event that triggered the transition        
-        void exit(const Event&);
-
-        Robot& robot();        
-
+            Robot& robot();
     };
-
 }
-
 #endif

@@ -8,11 +8,11 @@ using namespace std::chrono;
 using namespace elma;
 using namespace robot;
 
-Robot& OffState:: robot() { return (Robot&) state_machine(); }
+Robot& OffState::robot() { return (Robot&) state_machine(); }
 
 void OffState::exit(const Event& e) {
-    if ( e.name() == "on" ) {
-        // User turned on the robot
-        robot().turnOn();
+
+    switch (e.name()) {
+        case "on": robot().activateRobot(); break;  // User activates Robot
     }
 }

@@ -94,9 +94,9 @@ std::vector<std::tuple<int, std::string, int, int>> read_simulation_csv(const st
     if (debug) {
         for (int i = 0; i < data.size(); i++) {
                 std::cout << "Entry: " << get<0>(data[i])
-                        << "Command: " << get<1>(data[i])
-                        << "X-Coord: " << get<2>(data[i])
-                        << "Y-Coord: " << get<3>(data[i]) << "\n";
+                        << ", Command: " << get<1>(data[i])
+                        << ", X-Coord: " << get<2>(data[i])
+                        << ", Y-Coord: " << get<3>(data[i]) << "\n";
         }
     }
     
