@@ -1,6 +1,7 @@
 #include <iostream>
 #include <chrono>
 #include <vector>
+#include <string>
 
 #include "robot.h"
 
@@ -12,7 +13,5 @@ Robot& OffState::robot() { return (Robot&) state_machine(); }
 
 void OffState::exit(const Event& e) {
 
-    switch (e.name()) {
-        case "on": robot().activateRobot(); break;  // User activates Robot
-    }
+    if (e.name() == "on") robot().activateRobot();  // User activates Robot
 }

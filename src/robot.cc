@@ -100,4 +100,4 @@ bool Robot::makingnoise() { return _makingnoise; }
 bool Robot::evading() { return _evading; }
 bool Robot::findingstation() { return _findingstation; }
 bool Robot::recharging() { return _recharging; }
-bool Robot::dead() { return _dead; }
+bool Robot::isDead() { return _dead; }

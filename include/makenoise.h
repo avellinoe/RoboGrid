@@ -1,5 +1,5 @@
-#ifndef _ELMA_ROBOT_CLEAN_H
-#define _ELMA_ROBOT_CLEAN_H
+#ifndef _ELMA_ROBOT_MAKENOISE_H
+#define _ELMA_ROBOT_MAKENOISE_H
 
 #include "robot.h"
 
@@ -10,8 +10,8 @@ namespace robot {
 
     class Robot;  // Declare containing class so it can be referred to here
 
-    //! The run state of the robot
-    class MakeNoiseState : public State {        
+    //! The Makenoise state of the robot
+    class MakeNoiseState : public State {
 
         public:
             MakeNoiseState() : State("makenoise") {};
@@ -19,7 +19,7 @@ namespace robot {
             void during();
             void exit(const Event&);
 
-            Robot& robot();        
+            Robot& robot();
     };
 }
 #endif

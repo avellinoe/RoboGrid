@@ -1,6 +1,7 @@
 #include <iostream>
 #include <chrono>
 #include <vector>
+#include <string>
 
 #include "robot.h"
 
@@ -25,8 +26,7 @@ void MakeNoiseState::during() {
 }
 
 void MakeNoiseState::exit(const Event& e) {
-    switch (e.name()) {
-        case "evade": robot().goEvade(); break; // Robot begins to make noise
-        case "dead": robot().death(); break;    // Robot battery is depleted
-    }
+    
+    if (e.name() == "evade") robot().goEvade();     // Robot begins to make noise
+    else if (e.name() == "dead") robot().death();   // Robot battery is depleted
 }

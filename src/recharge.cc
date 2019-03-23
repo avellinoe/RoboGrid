@@ -1,6 +1,7 @@
 #include <iostream>
 #include <chrono>
 #include <vector>
+#include <string>
 
 #include "robot.h"
 
@@ -25,7 +26,6 @@ void RechargeState::during() {
 }
 
 void RechargeState::exit(const Event& e) {
-    switch (e.name()) {
-        case "wander": robot().goWander(); break; // Robot resumes wandering
-    }
+
+    if (e.name() == "wander") robot().goWander();   // Robot resumes wandering
 }

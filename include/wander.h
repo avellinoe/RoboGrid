@@ -1,5 +1,5 @@
-#ifndef _ELMA_ROBOT_RUN_H
-#define _ELMA_ROBOT_RUN_H
+#ifndef _ELMA_ROBOT_WANDER_H
+#define _ELMA_ROBOT_WANDER_H
 
 #include "robot.h"
 

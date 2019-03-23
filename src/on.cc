@@ -1,6 +1,7 @@
 #include <iostream>
 #include <chrono>
 #include <vector>
+#include <string>
 
 #include "robot.h"
 
@@ -11,9 +12,7 @@ using namespace robot;
 Robot& OnState::robot() { return (Robot&) state_machine(); }
 
 void OnState::exit(const Event& e) {
-
-    switch (e.name()) {
-        case "failsafe": robot().deactivateRobot(); break;  // User shuts down Robot
-        case "wander": robot().goWander(); break;           // Robot starts to wander
-    }
+    
+    if (e.name() == "failsafe") robot().deactivateRobot();  // User shuts down Robot
+    else if (e.name() == "wander") robot().goWander();      // Robot starts to wander
 }

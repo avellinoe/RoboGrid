@@ -1,5 +1,5 @@
-#ifndef _ELMA_ROBOT_CLEAN_H
-#define _ELMA_ROBOT_CLEAN_H
+#ifndef _ELMA_ROBOT_FINDSTATION_H
+#define _ELMA_ROBOT_FINDSTATION_H
 
 #include "robot.h"
 
@@ -11,7 +11,7 @@ namespace robot {
     class Robot;  // Declare containing class so it can be referred to here
 
     //! The FindStation state of the robot
-    class FindStationState : public State {        
+    class FindStationState : public State {
 
         public:
             FindStationState() : State("findstation") {};
@@ -19,7 +19,7 @@ namespace robot {
             void during();
             void exit(const Event&);
 
-            Robot& robot();        
+            Robot& robot();
     };
 }
 #endif

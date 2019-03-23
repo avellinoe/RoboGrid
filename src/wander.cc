@@ -1,6 +1,7 @@
 #include <iostream>
 #include <chrono>
 #include <vector>
+#include <string>
 
 #include "robot.h"
 
@@ -25,10 +26,9 @@ void WanderState::during() {
 }
 
 void WanderState::exit(const Event& e) {
-    switch (e.name()) {
-        case "makenoise": robot().goMakeNoise(); break;     // Robot begins to make noise
-        case "findstation": robot().goFindStation(); break; // Robot seeks out charge station
-        case "dead": robot().death(); break;                // Robot battery is depleted
-        case "off": robot().deactivateRobot(); break;       // User deactivates Robot
-    }
+
+    if (e.name() == "makenoise") robot().goMakeNoise();             // Robot begins to make noise
+    else if (e.name() == "findstation") robot().goFindStation();    // Robot seeks out charge station
+    else if (e.name() == "dead") robot().death();                   // Robot battery is depleted
+    else if (e.name() == "off") robot().deactivateRobot();          // User deactivates Robot
 }

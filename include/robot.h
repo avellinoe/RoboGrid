@@ -5,8 +5,12 @@
 
 #include "on.h"
 #include "off.h"
-#include "run.h"
-#include "clean.h"
+#include "wander.h"
+#include "makenoise.h"
+#include "evade.h"
+#include "findstation.h"
+#include "recharge.h"
+#include "dead.h"
 #include "robogrid.h"
 
 namespace robot {
@@ -42,7 +46,7 @@ namespace robot {
             bool evading();
             bool findingstation();
             bool recharging();
-            bool dead();
+            bool isDead();
 
             high_resolution_clock::duration timeValue();
 
@@ -84,5 +88,4 @@ namespace robot {
             high_resolution_clock::duration _elapsed;
     };
 }
-
 #endif

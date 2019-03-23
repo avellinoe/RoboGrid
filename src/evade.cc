@@ -1,6 +1,7 @@
 #include <iostream>
 #include <chrono>
 #include <vector>
+#include <string>
 
 #include "robot.h"
 
@@ -25,8 +26,7 @@ void EvadeState::during() {
 }
 
 void EvadeState::exit(const Event& e) {
-    switch (e.name()) {
-        case "findstation": robot().goFindStation(); break; // Robot seeks out charge station
-        case "dead": robot().death(); break;                // Robot battery is depleted
-    }
+
+    if (e.name() == "findstation") robot().goFindStation(); // Robot seeks out charge station
+    else if (e.name() == "dead") robot().death();           // Robot battery is depleted
 }

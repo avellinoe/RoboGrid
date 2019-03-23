@@ -54,16 +54,16 @@ void RoboGrid::create_window() {
 }
 
 bool RoboGrid::robotTimer(high_resolution_clock::duration d) {
-    if( _robot.isCleaning()) {
+    if( _robot.wandering()) {
         _saved = d;
-        mvprintw(20,1,"timer = %d:%02d", 
+        mvprintw(26,1,"timer = %d:%02d", 
         std::chrono::duration_cast<std::chrono::seconds>(d).count() % 60,
         (std::chrono::duration_cast<std::chrono::milliseconds>(d).count() % 1000)/10
         );
         _timerVal = true;
 
     } else {
-        mvprintw(20,1,"timer = %d:%02d", 
+        mvprintw(26,1,"timer = %d:%02d", 
         std::chrono::duration_cast<std::chrono::seconds>(_saved).count()%60,
         (std::chrono::duration_cast<std::chrono::milliseconds>(_saved).count()%1000)/10
         );
@@ -146,27 +146,26 @@ void RoboGrid::update() {
                 break;
         }
 
-        if (_robot.isOn()){
-            if(_moveRobot){
+        if (_robot.activated()) {
+            if (_robot.wandering()) {
                 wclear(robot);
                 wrefresh(robot);
                 waddch(robot,'R');
                 mvwin(robot,robY,robX);
-                for(int j = 0; j < sizeof(coordinates[0]); j++){
-                    if(coordinates[j][0] == robX && coordinates[j][1] == robY){
-                        mvprintw(21,1,"FOUND TRASH");
+                for (int j = 0; j < sizeof(coordinates[0]); j++) {
+                    if (coordinates[j][0] == robX && coordinates[j][1] == robY) {
+                        mvprintw(27,1,"FOUND TRASH");
                         coordinates[j][0] = 0;// set to 0 so trashbin doesnt double count
                         coordinates[j][1] = 0;// set to 0 so trashbin doesnt double count
                         trashbin++;
                     }
                 }
-                if(numCoords == trashbin){
-                    mvprintw(22,1,"DONE COLLECTING TRASH");
+                if (numCoords == trashbin) {
+                    mvprintw(28,1,"DONE COLLECTING TRASH");
                     emit(Event("stop"));
-                }else{
-                    mvprintw(22,1,"");
-                }
-            }else{
+                } else { mvprintw(28,1,""); }
+            
+            } else {
                 waddch(robot,'R');
             }
             wrefresh(robot);
@@ -174,9 +173,9 @@ void RoboGrid::update() {
 
         //take care of other stuff. 
         robotTimer(_robot.timeValue());
-        mvprintw(23,1,"on(o), off(d), stop(s), clean(c), add trash(t), quit(q)");
+        mvprintw(30,1,"on(o), off(d), stop(s), clean(c), add trash(t), quit(q)");
         for ( int i=0; i<_robot.addEvents().size(); i++ ) {
-            mvprintw(24+i, 1, "Event: %s", _robot.addEvents()[i].c_str());
+            mvprintw(31+i, 1, "Event: %s", _robot.addEvents()[i].c_str());
         }
     }
     //clear everything and return once q is hit

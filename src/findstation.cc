@@ -1,6 +1,7 @@
 #include <iostream>
 #include <chrono>
 #include <vector>
+#include <string>
 
 #include "robot.h"
 
@@ -25,8 +26,7 @@ void FindStationState::during() {
 }
 
 void FindStationState::exit(const Event& e) {
-    switch (e.name()) {
-        case "recharge": robot().goRecharge(); break; // Robot recharges at station
-        case "dead": robot().death(); break;          // Robot battery is depleted
-    }
+
+    if (e.name() == "recharge") robot().goRecharge();   // Robot recharges at station
+    else if (e.name() == "dead") robot().death();       // Robot battery is depleted
 }

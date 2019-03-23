@@ -47,6 +47,7 @@ namespace robot {
             std::string _world;
             bool _timerVal = false;
             bool _moveRobot = false;
+            high_resolution_clock::duration _saved;
 
             //! Simulation-only variables
             std::vector<std::tuple<int, std::string, int, int>> _commands;

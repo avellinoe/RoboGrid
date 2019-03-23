@@ -1,5 +1,5 @@
-#ifndef _ELMA_ROBOT_CLEAN_H
-#define _ELMA_ROBOT_CLEAN_H
+#ifndef _ELMA_ROBOT_EVADE_H
+#define _ELMA_ROBOT_EVADE_H
 
 #include "robot.h"
 
@@ -19,7 +19,7 @@ namespace robot {
             void during();
             void exit(const Event&);
 
-            Robot& robot();        
+            Robot& robot();
     };
 }
 #endif
