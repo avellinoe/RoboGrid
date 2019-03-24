@@ -244,18 +244,22 @@ void RoboGrid::update() {
                     if (rndx == 0) {
                         robX = robX;
                     } else if (rndx == 1) {
-                        robX++;
+                        if (robX < 49) {robX++;}
+                        else {robX = robX;}
                     } else {
-                        robX--;
+                        if (robX > 2) {robX--;}
+                        else {robX = robX;}
                     }
 
                     int rndy = rand() % 2;
                     if (rndy == 0) {
                         robY = robY;
                     } else if (rndy == 1) {
-                        robY++;
+                        if (robY < 24) {robY++;}
+                        else {robY = robY;}
                     } else {
-                        robY--;
+                        if (robY > 2) {robY--;}
+                        else {robY = robY;}
                     }
 
                     for (auto const& coordpairs: chargeStations) {
@@ -270,7 +274,8 @@ void RoboGrid::update() {
                             emit(Event("makenoise")); // Intruder detected
                             
                             if ((robX - get<0>(coordpairs) < 5) || (robY == get<1>(coordpairs) < 5)) {
-                            emit(Event("evade")); // Intruder detected and is in close proximity
+                                emit(Event("evade")); // Intruder detected and is in close proximity
+                            }
                         }
                     }
 
@@ -285,6 +290,9 @@ void RoboGrid::update() {
 
             case 'f':
                 emit(Event("findstation"));
+                int rndStation = rand() % 4;
+                robX = get<0>(chargeStations.at(rndStation))-1;
+                robY = get<1>(chargeStations.at(rndStation))-1;
                 break;
 
             case 'a':

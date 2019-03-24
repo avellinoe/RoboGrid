@@ -16,11 +16,10 @@ void FindStationState::entry(const Event& e) {
 }
 
 void FindStationState::during() {
-
+    robot().goRecharge();
 }
 
 void FindStationState::exit(const Event& e) {
 
-    if (e.name() == "recharge") robot().goRecharge();   // Robot recharges at station
-    else if (e.name() == "dead") robot().death();       // Robot battery is depleted
+    if (e.name() == "dead") robot().death();       // Robot battery is depleted
 }

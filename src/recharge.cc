@@ -12,7 +12,7 @@ using namespace robot;
 Robot& RechargeState::robot() { return (Robot&) state_machine(); }
 
 void RechargeState::entry(const Event& e) {
-
+    robot()._battery = 100;
 }
 
 void RechargeState::during() {
