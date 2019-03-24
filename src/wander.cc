@@ -16,7 +16,7 @@ void WanderState::entry(const Event& e) {
 }
 
 void WanderState::during() {
-
+    
 }
 
 void WanderState::exit(const Event& e) {

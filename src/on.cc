@@ -10,7 +10,8 @@ using namespace elma;
 using namespace robot;
 
 Robot& OnState::robot() { return (Robot&) state_machine(); }
-
+void OnState::entry(const Event& e) {}
+void OnState::during() {}
 void OnState::exit(const Event& e) {
     
     if (e.name() == "failsafe") robot().deactivateRobot();  // User shuts down Robot

@@ -57,6 +57,7 @@ namespace robot {
             high_resolution_clock::duration _saved;
             int lowBatteryThreshold = 35;
             int stations = 5;
+            int wanderSteps = 5;
 
             //! Simulation-only variables
             std::vector<std::tuple<int, std::string, int, int>> _commands;
@@ -75,5 +76,7 @@ namespace robot {
             int robotEventsLine = 40;       // This is where the RobotEvents Line starts in the window
             std::vector<std::tuple<int,int>> chargeStations;    // This is where the chargeStations are located
             std::vector<std::tuple<int,int>> intruders;         // This is where the intruders are located
+            bool allStationsAdded = false;
+            bool stationsDisplayed = false;
     };
 }

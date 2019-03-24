@@ -57,9 +57,6 @@ void RoboGrid::create_window() {
     box(robotWin,'|','-');
     wsyncup(robotWin);
     wrefresh(robotWin);
-
-    addStations();
-    displayStations();
 }
 
 void RoboGrid::print_robotInfo() {
@@ -160,6 +157,7 @@ void RoboGrid::addStations() {
         now_occupied++;
         i++;
     }
+    allStationsAdded = true;
 }
 
 void RoboGrid::displayStations() {
@@ -171,6 +169,7 @@ void RoboGrid::displayStations() {
         waddch(stationsWindow,'%');
         wrefresh(stationsWindow);
     }
+    stationsDisplayed = true;
 }
 
 void RoboGrid::addIntruder() {}
@@ -221,10 +220,15 @@ void RoboGrid::update() {
     while((ch=getch())!='q') {
         switch ( ch ) {            
             case 'o':
-                emit(Event("on"));
-                create_window();
-                robotWindow = newwin(1,1,2,2);
-                break;
+                if (_robot._activated) break;
+                else {
+                    emit(Event("on"));
+                    create_window();
+                    robotWindow = newwin(1,1,2,2);
+                    if (!allStationsAdded) addStations();
+                    if (!stationsDisplayed) displayStations();
+                    break;
+                }
 
             case 'x':
                 emit(Event("off"));
@@ -233,6 +237,34 @@ void RoboGrid::update() {
 
             case 'w':
                 emit(Event("wander"));
+                mvprintw(robotEventsLine+1,1,"Robot will wander for %i steps", wanderSteps);
+                for (int j = 0; j < wanderSteps; j++) {
+
+                    int rndx = rand() % 2;
+                    if (rndx == 0) {
+                        robX = robX;
+                    } else if (rndx == 1) {
+                        robX++;
+                    } else {
+                        robX--;
+                    }
+
+                    int rndy = rand() % 2;
+                    if (rndy == 0) {
+                        robY = robY;
+                    } else if (rndy == 1) {
+                        robY++;
+                    } else {
+                        robY--;
+                    }
+
+                    _robot._battery--;
+                    wclear(robotWindow);
+                    wrefresh(robotWindow);
+                    waddch(robotWindow,'R');
+                    mvwin(robotWindow,robY,robX);
+                    wrefresh(robotWindow);
+                }
                 break;
 
             case 'f':
@@ -243,39 +275,6 @@ void RoboGrid::update() {
                 addIntruder();
                 displayIntruders();
                 break;
-
-            /* KEYBOARD INPUTS */
-            case KEY_LEFT: 
-                if(robX > 2)  --robX;
-                break;
-            case KEY_RIGHT: 
-                if(robX < 39) ++robX;
-                break;
-            case KEY_UP: 
-                if(robY > 2)    --robY;
-                break;
-            case KEY_DOWN: 
-                if(robY < 18)  ++robY;
-                break;
-        }
-
-        if (_robot.activated()) {
-            if (_robot.wandering()) {
-                wclear(robotWindow);
-                wrefresh(robotWindow);
-                waddch(robotWindow,'R');
-                mvwin(robotWindow,robY,robX);
-                for (int j = 0; j < sizeof(coordinates[0]); j++) {
-                    if (coordinates[j][0] == robX && coordinates[j][1] == robY) {
-                        coordinates[j][0] = 0;
-                        coordinates[j][1] = 0;
-                    }
-                }
-            
-            } else {
-                waddch(robotWindow,'R');
-            }
-            wrefresh(robotWindow);
         }
 
         // Printing info
