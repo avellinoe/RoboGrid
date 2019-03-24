@@ -13,6 +13,12 @@ using namespace robot;
 std::map<std::tuple<int,int>, std::string> grid; // Grid with {x,y} coordinates and contents of the cell
 std::vector<string> contents = {"empty", "robot", "battery", "intruder"}; // Possible contents of a given cell
 
+// Grid variables
+int now_occupied = 0;
+static int x_max = 50; int y_max = 25;
+static int total_coord = x_max * y_max;
+int coordinates[1250][2]; // Two columns for x,y
+
 RoboGrid::RoboGrid(Robot& robot) : Process("User-in-control"), _world("user"),_robot(robot) {
     
     //! The following will always run and be valid, regardless of what kind of world is chosen
@@ -47,23 +53,86 @@ RoboGrid::RoboGrid(Robot& robot, std::string path) : Process("Simulation"), _wor
 void RoboGrid::create_window() {
     int rX = 0; //pos start x
     int rY = 0; //pos start y
-    WINDOW *robotWin = newwin(25,50,rY,rX);
+    WINDOW *robotWin = newwin(y_max,x_max,rY,rX);
     box(robotWin,'|','-');
     wsyncup(robotWin);
     wrefresh(robotWin);
+
+    addStations();
+    displayStations();
+}
+
+void RoboGrid::print_robotInfo() {
+    mvprintw(robotInfoLine,1,"Robot Info:");
+
+    if (_robot._battery >= lowBatteryThreshold) {
+        mvprintw(robotInfoLine+1,5,"Battery:");
+        
+    } else {
+        mvprintw(robotInfoLine+1,5,"LOW BATTERY:");
+    }
+    mvprintw(robotInfoLine+1,22,"%%");
+    mvprintw(robotInfoLine+1,24,"%i", _robot._battery);
+    
+    mvprintw(robotInfoLine+2,5,"Activated:");
+        if (_robot._activated) mvprintw(activatedLine,22,"TRUE!");
+        else mvprintw(activatedLine,22,"FALSE");
+
+    mvprintw(robotInfoLine+3,5,"Wandering:");
+        if (_robot._wandering) mvprintw(wanderingLine,22,"TRUE!");
+        else mvprintw(wanderingLine,22,"FALSE");
+
+    mvprintw(robotInfoLine+4,5,"Making Noise:");
+        if (_robot._makingnoise) mvprintw(makingnoiseLine,22,"TRUE!");
+        else mvprintw(makingnoiseLine,22,"FALSE");
+
+    mvprintw(robotInfoLine+5,5,"Evading:");
+        if (_robot._evading) mvprintw(evadingLine,22,"TRUE!");
+        else mvprintw(evadingLine,22,"FALSE");
+
+    mvprintw(robotInfoLine+6,5,"Finding Station:");
+        if (_robot._findingstation) mvprintw(findingstationLine,22,"TRUE!");
+        else mvprintw(findingstationLine,22,"FALSE");
+
+    mvprintw(robotInfoLine+7,5,"Recharging:");
+        if (_robot._recharging) mvprintw(rechargingLine,22,"TRUE!");
+        else mvprintw(rechargingLine,22,"FALSE");
+    
+    mvprintw(robotInfoLine+8,5,"Dead:");
+        if (_robot._dead) mvprintw(deadLine,22,"TRUE!");
+        else mvprintw(deadLine,22,"FALSE");
+}
+
+void RoboGrid::print_userOptions() {
+
+    if (_robot._activated){
+        if(_robot._wandering) {
+            mvprintw(userOptionsLine,1,"User options available: find_station[f] off[x] quit[q]");
+        } else {
+            mvprintw(userOptionsLine,1,"User options available: wander[w] add_intruder[a] off[x] quit[q]");
+        }
+    } else {
+        mvprintw(userOptionsLine,1,"User options available: on[o] quit[q]");
+    }
+}
+
+void RoboGrid::print_events() {
+    for ( int i=0; i<_robot.addEvents().size(); i++ ) {
+        mvprintw(robotEventsLine+i, 1, "Event: %s", _robot.addEvents()[i].c_str());
+    }
 }
 
 bool RoboGrid::robotTimer(high_resolution_clock::duration d) {
     if( _robot.wandering()) {
         _saved = d;
-        mvprintw(26,1,"timer = %d:%02d", 
-        std::chrono::duration_cast<std::chrono::seconds>(d).count() % 60,
-        (std::chrono::duration_cast<std::chrono::milliseconds>(d).count() % 1000)/10
+        mvprintw(timerLine,1,"Time elapsed = %d:%02d", 
+            std::chrono::duration_cast<std::chrono::seconds>(d).count() % 60,
+            (std::chrono::duration_cast<std::chrono::milliseconds>(d).count() % 1000)/10
         );
         _timerVal = true;
 
     } else {
-        mvprintw(26,1,"timer = %d:%02d", 
+        mvprintw(timerLine,1,"Time elapsed = %d:%02d", 
         std::chrono::duration_cast<std::chrono::seconds>(_saved).count()%60,
         (std::chrono::duration_cast<std::chrono::milliseconds>(_saved).count()%1000)/10
         );
@@ -71,67 +140,111 @@ bool RoboGrid::robotTimer(high_resolution_clock::duration d) {
     return _timerVal;
 }
 
-void RoboGrid::addTrash(int x, int y){
-    WINDOW *trashWin = newwin(1,1,y,x);
-
-    waddch(trashWin,'*');
-    wrefresh(trashWin);
+void RoboGrid::addStations() {
+    int i = 0, rnd, cx, cy;;
+    std::tuple<int,int> xy;
+    while (i < stations) {
+        rnd = rand() % (total_coord);
+        cx = rnd % x_max;
+        cy = rnd / x_max;
+        while (cx < 2 || cy < 2) { // Repeat if coordinates are out of bounds
+            rnd = rand() % (total_coord);
+            cx = rnd % x_max;
+            cy = rnd / x_max;
+        }
+        coordinates[now_occupied][0] = cx;
+        coordinates[now_occupied][1] = cy;
+        get<0>(xy) = cx;
+        get<1>(xy) = cy;
+        chargeStations.push_back(xy);
+        now_occupied++;
+        i++;
+    }
 }
+
+void RoboGrid::displayStations() {
+    int x, y;
+    for (auto const& coordpairs: chargeStations) {
+        x = get<0>(coordpairs);
+        y = get<1>(coordpairs);
+        WINDOW *stationsWindow = newwin(1,1,y,x);
+        waddch(stationsWindow,'%');
+        wrefresh(stationsWindow);
+    }
+}
+
+void RoboGrid::addIntruder() {}
+//     int i = 0, rnd, cx, cy;
+//     bool already_occupied = true;
+//     std::tuple<int,int> xy;
+//     rnd = rand() % (y_max * x_max);
+//     cx = rnd % x_max;
+//     cy = rnd / x_max;
+    
+//     while (already_occupied) { // Repeat if cell is already occupied
+//         already_occupied = false;
+//         for (auto const& coordpairs: chargeStations) {
+//             if (cx == get<0>(coordpairs) && cy == get<1>(coordpairs)) {
+//                 already_occupied = true;
+//             }
+//         }
+//         rnd = rand() % (total_coord);
+//         cx = rnd % x_max;
+//         cy = rnd / x_max;
+//     }
+//     coordinates[now_occupied][0] = cx;
+//     coordinates[now_occupied][1] = cy;
+//     get<0>(xy) = cx;
+//     get<1>(xy) = cy;
+//     intruders.push_back(xy);
+//     now_occupied++;
+// }
+
+void RoboGrid::displayIntruders() {}
+//     int x, y;
+//     for (auto const& coordpairs: intruders) {
+//         x = get<0>(coordpairs);
+//         y = get<1>(coordpairs);
+//         WINDOW *intrudersWindow = newwin(1,1,y,x);
+//         waddch(intrudersWindow,'@');
+//         wrefresh(intrudersWindow);
+//     }
+// }
 
 void RoboGrid::update() {
 
-    // USER INPUT
-    // get a character from the user, if one is ready.
-    // If no character is ready, getch() returns ERR (which is
-    // ignored below since there is no condition in the switch statement)
-    int ch,total,rnd,cx,cy;
-    int robX = 1;
-    int robY = 1;
-    int numCoords = 0, trashbin = 0;
-    int coordinates[25*50][2];
-    WINDOW *robot = newwin(1,1,2,2);
+    int ch,total;
+    int robX = 1,robY = 1;
+    WINDOW *robotWindow = newwin(1,1,2,2);
     create_window();
 
-    while((ch=getch())!='q'){
+    while((ch=getch())!='q') {
         switch ( ch ) {            
             case 'o':
                 emit(Event("on"));
                 create_window();
-                robot = newwin(1,1,2,2);
+                robotWindow = newwin(1,1,2,2);
                 break;
-            case 'd':
+
+            case 'x':
                 emit(Event("off"));
-                clear(); // Clear the screen of old stuff
+                clear(); // Clear screen
                 break;
-            //case 'r':
-                //emit(Event("run"));
-                //break;
-            case 's':
-                emit(Event("stop"));
-                _moveRobot = false;
+
+            case 'w':
+                emit(Event("wander"));
                 break;
-            case 'c':
-                emit(Event("clean"));
-                //timer start
-                _moveRobot = true;
+
+            case 'f':
+                emit(Event("findstation"));
                 break;
-            case 't':
-                //for(int i = 0; i < 2; i++){
-                     rnd = rand() % (40*19);
-                     cx = rnd % 40;
-                     cy = rnd / 40;
-                    while (cx<2 || cy < 2){
-                        rnd = rand() % (40*19);
-                        cx = rnd % 40;
-                        cy = rnd / 40;
-                    }
-                    coordinates[numCoords][0] = cx;
-                    coordinates[numCoords][1] = cy;
-                    addTrash(cx,cy);
-                    ++numCoords;
-                //}
+
+            case 'a':
+                addIntruder();
+                displayIntruders();
                 break;
-            //KEYBOARD, only move within window
+
+            /* KEYBOARD INPUTS */
             case KEY_LEFT: 
                 if(robX > 2)  --robX;
                 break;
@@ -148,37 +261,31 @@ void RoboGrid::update() {
 
         if (_robot.activated()) {
             if (_robot.wandering()) {
-                wclear(robot);
-                wrefresh(robot);
-                waddch(robot,'R');
-                mvwin(robot,robY,robX);
+                wclear(robotWindow);
+                wrefresh(robotWindow);
+                waddch(robotWindow,'R');
+                mvwin(robotWindow,robY,robX);
                 for (int j = 0; j < sizeof(coordinates[0]); j++) {
                     if (coordinates[j][0] == robX && coordinates[j][1] == robY) {
-                        mvprintw(27,1,"FOUND TRASH");
-                        coordinates[j][0] = 0;// set to 0 so trashbin doesnt double count
-                        coordinates[j][1] = 0;// set to 0 so trashbin doesnt double count
-                        trashbin++;
+                        coordinates[j][0] = 0;
+                        coordinates[j][1] = 0;
                     }
                 }
-                if (numCoords == trashbin) {
-                    mvprintw(28,1,"DONE COLLECTING TRASH");
-                    emit(Event("stop"));
-                } else { mvprintw(28,1,""); }
             
             } else {
-                waddch(robot,'R');
+                waddch(robotWindow,'R');
             }
-            wrefresh(robot);
+            wrefresh(robotWindow);
         }
 
-        //take care of other stuff. 
+        // Printing info
         robotTimer(_robot.timeValue());
-        mvprintw(30,1,"on(o), off(d), stop(s), clean(c), add trash(t), quit(q)");
-        for ( int i=0; i<_robot.addEvents().size(); i++ ) {
-            mvprintw(31+i, 1, "Event: %s", _robot.addEvents()[i].c_str());
-        }
-    }
-    //clear everything and return once q is hit
+        print_robotInfo();
+        print_userOptions();
+        print_events();
+    } // End of while loop
+    
+    // Clear all and exit when user enters 'q'
     if (ch=='q'){
         std::cout << "halting\n";
         halt();

@@ -49,7 +49,6 @@ namespace robot {
             bool isDead();
 
             high_resolution_clock::duration timeValue();
-
             
             //! Get a list of Events
             const vector<string>& addEvents() { return _currEvents; }
@@ -58,6 +57,15 @@ namespace robot {
             //! alarm is triggered when intercepting an intruder
             int _battery;
             bool _alarm;
+
+            //! Boolean flag variables
+            bool _activated = false;
+            bool _wandering = false;
+            bool _makingnoise = false;
+            bool _evading = false;
+            bool _findingstation = false;
+            bool _recharging = false;
+            bool _dead = false;
 
         private:
 
@@ -70,15 +78,6 @@ namespace robot {
             FindStationState findstation;
             RechargeState recharge;
             DeadState dead;
-
-            //! Boolean flag variables
-            bool _activated = false;
-            bool _wandering = false;
-            bool _makingnoise = false;
-            bool _evading = false;
-            bool _findingstation = false;
-            bool _recharging = false;
-            bool _dead = false;
             
             //! Vector of events
             vector<string> _currEvents;

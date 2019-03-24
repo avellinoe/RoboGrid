@@ -3,6 +3,13 @@
 
 ![Robot StateMachine Diagram](./robot.png)
 ___________________
+## Build Process
+- cd RoboGrid
+- docker run -v $PWD:/source -it klavins/elma:latest bash
+- *while in docker*
+    - make
+    - ./bin/robot_run
+___________________
 ## Overview
 `RoboGrid` provides the following extended functionality to `Robot`:
 - Simulation of the robot as it autonomously navigates around a user-defined 2-D grid

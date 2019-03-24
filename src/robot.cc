@@ -45,6 +45,10 @@ void Robot::activateRobot() {
 void Robot::deactivateRobot() {
     _activated = false;
     _wandering = false;
+    _makingnoise = false;
+    _evading = false;
+    _findingstation = false;
+    _alarm = false;
     string currE = "Robot deactivated";
     addEvent(currE);
 }
