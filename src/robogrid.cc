@@ -258,6 +258,19 @@ void RoboGrid::update() {
                         robY--;
                     }
 
+                    for (auto const& coordpairs: chargeStations) {
+                        if (robX == get<0>(coordpairs) && robY == get<1>(coordpairs)) {
+                            emit(Event("recharge"));
+                            break;
+                        }
+                    }
+
+                    for (auto const& coordpairs: intruders) {
+                        if (robX == get<0>(coordpairs) || robY == get<1>(coordpairs)) {
+                            emit(Event("makenoise"));
+                        }
+                    }
+
                     _robot._battery--;
                     wclear(robotWindow);
                     wrefresh(robotWindow);
