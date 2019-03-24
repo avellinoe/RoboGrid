@@ -267,7 +267,10 @@ void RoboGrid::update() {
 
                     for (auto const& coordpairs: intruders) {
                         if (robX == get<0>(coordpairs) || robY == get<1>(coordpairs)) {
-                            emit(Event("makenoise"));
+                            emit(Event("makenoise")); // Intruder detected
+                            
+                            if ((robX - get<0>(coordpairs) < 5) || (robY == get<1>(coordpairs) < 5)) {
+                            emit(Event("evade")); // Intruder detected and is in close proximity
                         }
                     }
 
