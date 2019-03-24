@@ -73,7 +73,7 @@ namespace robot {
             int rechargingLine = 35;        // "Activated"
             int deadLine = 36;              // "Activated"
             int userOptionsLine = 38;       // This is where the UserOptions Line starts in the window
-            int robotEventsLine = 40;       // This is where the RobotEvents Line starts in the window
+            int robotEventsLine = 41;       // This is where the RobotEvents Line starts in the window
             std::vector<std::tuple<int,int>> chargeStations;    // This is where the chargeStations are located
             std::vector<std::tuple<int,int>> intruders;         // This is where the intruders are located
             bool allStationsAdded = false;

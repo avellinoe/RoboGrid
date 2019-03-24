@@ -69,7 +69,7 @@ void RoboGrid::print_robotInfo() {
         mvprintw(robotInfoLine+1,5,"LOW BATTERY:");
     }
     mvprintw(robotInfoLine+1,22,"%%");
-    mvprintw(robotInfoLine+1,24,"%i", _robot._battery);
+    mvprintw(robotInfoLine+1,24,"%4d", _robot._battery);
     
     mvprintw(robotInfoLine+2,5,"Activated:");
         if (_robot._activated) mvprintw(activatedLine,22,"TRUE!");
@@ -220,6 +220,7 @@ void RoboGrid::update() {
     while((ch=getch())!='q') {
         switch ( ch ) {            
             case 'o':
+            {
                 if (_robot._activated) break;
                 else {
                     emit(Event("on"));
@@ -229,21 +230,24 @@ void RoboGrid::update() {
                     if (!stationsDisplayed) displayStations();
                     break;
                 }
+            } break;
 
             case 'x':
+            {
                 emit(Event("off"));
                 clear(); // Clear screen
-                break;
+            } break;
 
             case 'w':
+            {
                 emit(Event("wander"));
-                mvprintw(robotEventsLine+1,1,"Robot will wander for %i steps", wanderSteps);
+                mvprintw(robotEventsLine-1,1,"Robot will wander for %i steps", wanderSteps);
                 for (int j = 0; j < wanderSteps; j++) {
 
-                    int rndx = rand() % 2;
+                    int rndx = rand() % 100;
                     if (rndx == 0) {
                         robX = robX;
-                    } else if (rndx == 1) {
+                    } else if (rndx % 2 != 0) {
                         if (robX < 49) {robX++;}
                         else {robX = robX;}
                     } else {
@@ -251,10 +255,10 @@ void RoboGrid::update() {
                         else {robX = robX;}
                     }
 
-                    int rndy = rand() % 2;
+                    int rndy = rand() % 100;
                     if (rndy == 0) {
                         robY = robY;
-                    } else if (rndy == 1) {
+                    } else if (rndy % 2 != 0) {
                         if (robY < 24) {robY++;}
                         else {robY = robY;}
                     } else {
@@ -280,20 +284,25 @@ void RoboGrid::update() {
                     }
 
                     _robot._battery--;
+
+                    if (_robot._battery == 0) emit(Event("dead"));
+
                     wclear(robotWindow);
                     wrefresh(robotWindow);
                     waddch(robotWindow,'R');
                     mvwin(robotWindow,robY,robX);
                     wrefresh(robotWindow);
                 }
-                break;
+            } break;
 
             case 'f':
+            {
                 emit(Event("findstation"));
                 int rndStation = rand() % 4;
                 robX = get<0>(chargeStations.at(rndStation))-1;
                 robY = get<1>(chargeStations.at(rndStation))-1;
-                break;
+                emit(Event("recharge"));
+            } break;
 
             case 'a':
                 addIntruder();
